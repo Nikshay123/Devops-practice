@@ -4,6 +4,8 @@ pipeline {
     environment {
         DOTNET_VERSION = '8.0' // Specify .NET 8
         PROJECT_DIR = 'Devops_practice' // Path to the folder containing the .NET project
+        DOCKER_IMAGE_NAME = 'nikshay7891/devops-practice' // Replace with your Docker Hub username and image name
+        DOCKER_TAG = 'latest'
     }
 
     stages {
@@ -41,6 +43,24 @@ pipeline {
             steps {
                 dir(env.PROJECT_DIR) { // Navigate to the project directory
                     sh 'dotnet publish --configuration Release --output ./publish --no-restore'
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                dir(env.PROJECT_DIR) { // Navigate to the project directory
+                    script {
+                        docker.build("${env.DOCKER_IMAGE_NAME}:${env.DOCKER_TAG}", ".")
+                    }
+                }
+            }
+        }
+
+        stage('Run Docker Container') {
+            steps {
+                script {
+                    sh "docker run -d -p 8081:80 --name devops-practice-container ${env.DOCKER_IMAGE_NAME}:${env.DOCKER_TAG}"
                 }
             }
         }
