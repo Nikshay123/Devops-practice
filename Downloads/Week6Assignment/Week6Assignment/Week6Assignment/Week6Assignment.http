@@ -1,6 +1,0 @@
-@Week6Assignment_HostAddress = http://localhost:5119
-
-GET {{Week6Assignment_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
