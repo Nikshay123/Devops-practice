@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         DOTNET_VERSION = '8.0' // Specify .NET 8
+        PROJECT_DIR = 'Devops_practice' // Path to the folder containing the .NET project
     }
 
     stages {
@@ -14,25 +15,33 @@ pipeline {
 
         stage('Restore') {
             steps {
-                sh 'dotnet restore'
+                dir(env.PROJECT_DIR) { // Navigate to the project directory
+                    sh 'dotnet restore'
+                }
             }
         }
 
         stage('Build') {
             steps {
-                sh 'dotnet build --configuration Release --no-restore'
+                dir(env.PROJECT_DIR) { // Navigate to the project directory
+                    sh 'dotnet build --configuration Release --no-restore'
+                }
             }
         }
 
         stage('Test') {
             steps {
-                sh 'dotnet test --no-restore --verbosity normal'
+                dir(env.PROJECT_DIR) { // Navigate to the project directory
+                    sh 'dotnet test --no-restore --verbosity normal'
+                }
             }
         }
 
         stage('Publish') {
             steps {
-                sh 'dotnet publish --configuration Release --output ./publish --no-restore'
+                dir(env.PROJECT_DIR) { // Navigate to the project directory
+                    sh 'dotnet publish --configuration Release --output ./publish --no-restore'
+                }
             }
         }
     }
