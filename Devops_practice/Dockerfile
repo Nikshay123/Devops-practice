@@ -32,6 +32,7 @@ COPY --from=publish /app/publish .
 
 # ✅ Set ASP.NET Core URLs
 ENV ASPNETCORE_URLS="http://+:80"
+ENV ASPNETCORE_ENVIRONMENT=Development
 
 # Start the application
 ENTRYPOINT ["dotnet", "Devops_practice.dll"]
