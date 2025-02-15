@@ -13,6 +13,9 @@ app.UseStaticFiles();
 // ✅ Enable Swagger in both Development and Production
 if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
+    Console.WriteLine($"Environment: {app.Environment.EnvironmentName}");
+    Console.WriteLine("Registering Swagger...");
+
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
