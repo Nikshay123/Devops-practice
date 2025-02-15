@@ -7,14 +7,21 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Enable Swagger in both Development and Production
+// Enable serving static files (Swagger assets)
+app.UseStaticFiles();
+
+// ✅ Enable Swagger in both Development and Production
 if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+        c.RoutePrefix = "swagger"; // Ensures Swagger loads at "/swagger"
+    });
 }
 
-// Disable HTTPS redirection in Docker (Production mode)
+// Disable HTTPS redirection in Production
 if (!app.Environment.IsProduction())
 {
     app.UseHttpsRedirection();
