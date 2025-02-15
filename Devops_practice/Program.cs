@@ -10,29 +10,15 @@ var app = builder.Build();
 // Enable serving static files (Swagger assets)
 app.UseStaticFiles();
 
-// ✅ Enable Swagger in both Development and Production
-if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
+// ✅ Always enable Swagger (Production + Development)
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    Console.WriteLine($"Environment: {app.Environment.EnvironmentName}");
-    Console.WriteLine("Registering Swagger...");
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+    c.RoutePrefix = string.Empty; // Swagger loads at "/"
+});
 
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-        c.RoutePrefix = "swagger"; // Ensures Swagger loads at "/swagger"
-    });
-}
-
-// Disable HTTPS redirection in Production
-if (!app.Environment.IsProduction())
-{
-    app.UseHttpsRedirection();
-}
-
-// Ensure the app listens on HTTP in Docker
-app.Urls.Add("http://*:80");
-
+// 🚀 Remove HTTPS redirection (not needed inside Docker)
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
