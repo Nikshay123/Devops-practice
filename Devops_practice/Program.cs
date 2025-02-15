@@ -1,13 +1,13 @@
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Add services
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// **Ensure Swagger works in production**
+// Enable Swagger in Production
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
@@ -15,11 +15,8 @@ app.UseSwaggerUI(c =>
     c.RoutePrefix = "swagger"; // Ensures Swagger is available at "/swagger"
 });
 
-// **Serve Static Files for Swagger**
-app.UseStaticFiles();  // <-- ADD THIS LINE
-
-// Remove HTTPS redirection
-// app.UseHttpsRedirection();
+// Enable static file serving (IMPORTANT for Swagger UI)
+app.UseStaticFiles();
 
 app.UseAuthorization();
 app.MapControllers();
