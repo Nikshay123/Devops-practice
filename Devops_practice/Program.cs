@@ -7,18 +7,20 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Enable serving static files (Swagger assets)
+// ✅ Enable serving static files (Swagger assets)
 app.UseStaticFiles();
 
-// ✅ Always enable Swagger (Production + Development)
+// ✅ Always enable Swagger (for debugging inside Docker)
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-    c.RoutePrefix = string.Empty; // Swagger loads at "/"
+    c.RoutePrefix = "swagger"; // Ensures Swagger loads at "/swagger"
 });
 
-// 🚀 Remove HTTPS redirection (not needed inside Docker)
+// ✅ Ensure the app listens on HTTP inside Docker
+app.Urls.Add("http://+:80");
+
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
