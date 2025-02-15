@@ -7,7 +7,7 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Enable Swagger in ALL environments, including Production
+// **Ensure Swagger works in production**
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
@@ -15,7 +15,10 @@ app.UseSwaggerUI(c =>
     c.RoutePrefix = "swagger"; // Ensures Swagger is available at "/swagger"
 });
 
-// Remove HTTPS redirection to avoid conflicts
+// **Serve Static Files for Swagger**
+app.UseStaticFiles();  // <-- ADD THIS LINE
+
+// Remove HTTPS redirection
 // app.UseHttpsRedirection();
 
 app.UseAuthorization();
