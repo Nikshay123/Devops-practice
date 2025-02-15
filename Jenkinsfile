@@ -2,22 +2,21 @@ pipeline {
     agent any
 
     environment {
-        DOTNET_VERSION = '8.0' // Specify .NET 8
-        PROJECT_DIR = 'Devops_practice' // Path to the folder containing the .NET project
-        DOCKER_IMAGE_NAME = 'nikshay7891/devops-practice' // Replace with your Docker Hub username and image name
+        PROJECT_DIR = 'Devops_practice' // Adjust if needed
+        DOCKER_IMAGE_NAME = 'nikshay7891/devops-practice' // Update with your Docker Hub username
         DOCKER_TAG = 'latest'
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/Nikshay123/Devops-practice.git' // Your repository URL
+                git 'https://github.com/Nikshay123/Devops-practice.git'
             }
         }
 
         stage('Restore') {
             steps {
-                dir(env.PROJECT_DIR) { // Navigate to the project directory
+                dir(env.PROJECT_DIR) {
                     sh 'dotnet restore'
                 }
             }
@@ -25,7 +24,7 @@ pipeline {
 
         stage('Build') {
             steps {
-                dir(env.PROJECT_DIR) { // Navigate to the project directory
+                dir(env.PROJECT_DIR) {
                     sh 'dotnet build --configuration Release --no-restore'
                 }
             }
@@ -33,7 +32,7 @@ pipeline {
 
         stage('Test') {
             steps {
-                dir(env.PROJECT_DIR) { // Navigate to the project directory
+                dir(env.PROJECT_DIR) {
                     sh 'dotnet test --no-restore --verbosity normal'
                 }
             }
@@ -41,7 +40,7 @@ pipeline {
 
         stage('Publish') {
             steps {
-                dir(env.PROJECT_DIR) { // Navigate to the project directory
+                dir(env.PROJECT_DIR) {
                     sh 'dotnet publish --configuration Release --output ./publish --no-restore'
                 }
             }
@@ -49,10 +48,19 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                dir(env.PROJECT_DIR) { // Navigate to the project directory
+                dir(env.PROJECT_DIR) {
                     script {
-                        docker.build("${env.DOCKER_IMAGE_NAME}:${env.DOCKER_TAG}", ".")
+                        sh "docker build -t ${env.DOCKER_IMAGE_NAME}:${env.DOCKER_TAG} ."
                     }
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    sh "docker login -u nikshay7891 -p qwertyuiop"
+                    sh "docker push ${env.DOCKER_IMAGE_NAME}:${env.DOCKER_TAG}"
                 }
             }
         }
@@ -60,22 +68,21 @@ pipeline {
         stage('Run Docker Container') {
             steps {
                 script {
-                    sh """
-                        docker stop devops-practice-container || true
-                        docker rm devops-practice-container || true
-                        docker run -d -p 8081:80 --name devops-practice-container ${env.DOCKER_IMAGE_NAME}:${env.DOCKER_TAG}
-                    """
+                    sh "docker run -d -p 8081:80 --name devops-practice-container ${env.DOCKER_IMAGE_NAME}:${env.DOCKER_TAG}"
                 }
             }
         }
     }
 
     post {
+        always {
+            echo "Pipeline execution completed."
+        }
         success {
-            echo 'Pipeline succeeded!'
+            echo "Pipeline executed successfully."
         }
         failure {
-            echo 'Pipeline failed!'
+            echo "Pipeline failed!"
         }
     }
 }
