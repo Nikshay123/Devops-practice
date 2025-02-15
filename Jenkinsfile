@@ -60,7 +60,11 @@ pipeline {
         stage('Run Docker Container') {
             steps {
                 script {
-                    sh "docker run -d -p 8081:80 --name devops-practice-container ${env.DOCKER_IMAGE_NAME}:${env.DOCKER_TAG}"
+                    sh """
+                        docker stop devops-practice-container || true
+                        docker rm devops-practice-container || true
+                        docker run -d -p 8081:80 --name devops-practice-container ${env.DOCKER_IMAGE_NAME}:${env.DOCKER_TAG}
+                    """
                 }
             }
         }
